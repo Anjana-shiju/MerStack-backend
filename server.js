@@ -276,6 +276,21 @@ app.put("/api/bookings/:id", verifyAdmin, async (req, res) => {
   }
 });
 
+app.delete("/api/bookings/:id", verifyAdmin, async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking)
+      return res.status(404).json({ message: "Booking not found" });
+
+    await Booking.findByIdAndDelete(req.params.id);
+
+    res.json({ message: "Booking deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Delete failed" });
+  }
+});
+
 // ---------------- ACTIVITIES ----------------
 app.get("/api/activities", async (req, res) => {
   try {
@@ -307,6 +322,32 @@ app.post(
   }
 );
 
+
+// UPDATE Activity (Admin)
+app.put(
+  "/api/activities/:id",
+  verifyAdmin,
+  upload.single("image"),
+  async (req, res) => {
+    try {
+      let updatedData = { ...req.body };
+
+      if (req.file) {
+        updatedData.image = `/uploads/${req.file.filename}`;
+      }
+
+      await Activity.findByIdAndUpdate(req.params.id, updatedData);
+
+      res.json({ message: "Activity updated successfully" });
+    } catch (err) {
+      res.status(500).json({ message: "Update failed" });
+    }
+  }
+);
+
+
+
+
 // ---------------- GALLERY ----------------
 app.get("/api/gallery", async (req, res) => {
   try {
@@ -337,6 +378,30 @@ app.post(
     }
   }
 );
+
+
+// UPDATE Gallery Image (Admin)
+app.put(
+  "/api/gallery/:id",
+  verifyAdmin,
+  upload.single("image"),
+  async (req, res) => {
+    try {
+      let updatedData = { ...req.body };
+
+      if (req.file) {
+        updatedData.image = `/uploads/${req.file.filename}`;
+      }
+
+      await Gallery.findByIdAndUpdate(req.params.id, updatedData);
+
+      res.json({ message: "Image updated successfully" });
+    } catch (err) {
+      res.status(500).json({ message: "Update failed" });
+    }
+  }
+);
+
 
 
 // ---------------- UPDATE PACKAGE ----------------
