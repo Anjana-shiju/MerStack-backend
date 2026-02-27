@@ -221,27 +221,29 @@ app.post("/api/contact", async (req, res) => {
   try {
     const { name, email, subject, message } = req.body;
 
-    // Validation
-    if (!name || !email || !subject || !message) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
+ const transporter = nodemailer.createTransport({
+  host: "142.250.152.109", // Gmail SMTP IPv4
+  port: 465,
+  secure: true,
+  auth: {
+    user: "anjanashiju28@gmail.com",
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
-    const mailOptions = {
-      from: `"Travel Website" <anjanashiju28@gmail.com>`,
-      to: "anjanashiju28@gmail.com",
-      replyTo: email,
-      subject: subject,
-      text: `
-New Contact Message
-
+  const mailOptions = {
+  from: `"Travel Website" <anjanashiju28@gmail.com>`,
+  to: "anjanashiju28@gmail.com",
+  replyTo: email,
+  subject: subject,
+  text: `
 Name: ${name}
 Email: ${email}
 
 Message:
 ${message}
-      `,
-    };
-
+  `,
+};
     await transporter.sendMail(mailOptions);
 
     res.status(200).json({ message: "Message sent successfully" });
