@@ -216,26 +216,24 @@ app.post("/api/bookings", async (req, res) => {
 
 
 
+// ---------------- CONTACT ----------------
 app.post("/api/contact", async (req, res) => {
   try {
     const { name, email, subject, message } = req.body;
 
-    const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  family: 4, // 🔥 THIS LINE FORCES IPv4
-  auth: {
-    user: "anjanashiju28@gmail.com",
-    pass: process.env.EMAIL_PASS,
-  },
-});
+    // Validation
+    if (!name || !email || !subject || !message) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
     const mailOptions = {
-         
-      to: "anjanashiju28@gmail.com",     
-      replyTo: email,                   
+      from: `"Travel Website" <anjanashiju28@gmail.com>`,
+      to: "anjanashiju28@gmail.com",
+      replyTo: email,
       subject: subject,
       text: `
+New Contact Message
+
 Name: ${name}
 Email: ${email}
 
@@ -246,10 +244,11 @@ ${message}
 
     await transporter.sendMail(mailOptions);
 
-    res.json({ message: "Message sent successfully " });
+    res.status(200).json({ message: "Message sent successfully" });
+
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Failed " });
+    console.error("Contact Error:", err);
+    res.status(500).json({ message: "Failed to send message" });
   }
 });
 
