@@ -221,13 +221,15 @@ app.post("/api/contact", async (req, res) => {
     const { name, email, subject, message } = req.body;
 
     const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: "anjanashiju28@gmail.com",  
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  family: 4, // 🔥 THIS LINE FORCES IPv4
+  auth: {
+    user: "anjanashiju28@gmail.com",
+    pass: process.env.EMAIL_PASS,
+  },
+});
     const mailOptions = {
          
       to: "anjanashiju28@gmail.com",     
